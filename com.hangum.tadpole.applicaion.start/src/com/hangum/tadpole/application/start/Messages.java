@@ -20,7 +20,6 @@ public class Messages {
 	
 	public String AboutAction_0;
 	public String AboutAction_3;
-	public String AboutAction_5;
 	public String ApplicationActionBarAdvisor_0;
 	public String ApplicationActionBarAdvisor_1;
 	public String ApplicationActionBarAdvisor_2;
@@ -39,7 +38,6 @@ public class Messages {
 	
 	public String AboutDialog_0;
 	public String AboutDialog_5;
-	public String AboutDialog_6;
 	public String AboutDialog_7;
 	public String AboutDialog_lblReleaseDate_text;
 	public String UserInformationDialog_5;
@@ -75,6 +73,8 @@ public class Messages {
 	public String AlreadyLoginConfirm;
 
 	public String ApplicationActionBarAdvisor_Observer;
+	
+	public String UseLicense;
 	
 	public static Messages get() {
 		return RWT.NLS.getISO8859_1Encoded(BUNDLE_NAME, Messages.class);

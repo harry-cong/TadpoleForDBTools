@@ -439,7 +439,7 @@ public class Messages {
 
 	public String SQLTemplateView_Addpublictemplate;
 	public String SQLTemplate;
-	public String JDBCDriverSetting;
+	public String JDBCDriverManager;
 	public String JDBCDriverSetting_DriverList;
 	public String JDBCDriverSetting_Path;
 	public String JDBCDriverSetting_FileList;
@@ -713,6 +713,18 @@ public class Messages {
 	public String CheckSQLStatement;
 	
 	public String RowChangeCount;
+	
+	public String BatchErrorMsg;
+	
+	public String WarnEditorIsOpen;
+
+	public String DoNotSupportDynamoDB;
+
+	public String ConfirmCommit;
+
+	public String ConfirmRollback;
+	
+	
 	
 	public static Messages get() {
 		return RWT.NLS.getISO8859_1Encoded(BUNDLE_NAME, Messages.class);

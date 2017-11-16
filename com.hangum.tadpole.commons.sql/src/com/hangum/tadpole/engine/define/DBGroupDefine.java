@@ -39,7 +39,9 @@ public enum DBGroupDefine {
 	/* cubrid */
 	CUBRID_GROUP,
 	/* altibase */
-	ALTIBASE_GROUP
+	ALTIBASE_GROUP, 
+	
+	DYNAMODB_GROUP
 	;
 	
 	private static final Logger logger = Logger.getLogger(DBGroupDefine.class);
@@ -51,7 +53,7 @@ public enum DBGroupDefine {
 			return MSSQL_GROUP;
 		} else if(dbDefine == DBDefine.MYSQL_DEFAULT || dbDefine == DBDefine.MARIADB_DEFAULT) {
 			return MYSQL_GROUP;
-		} else if(dbDefine == DBDefine.POSTGRE_DEFAULT || dbDefine == DBDefine.AGENSGRAPH_DEFAULT || dbDefine == DBDefine.AMAZON_REDSHIFT_DEFAULT) {
+		} else if(dbDefine == DBDefine.POSTGRE_DEFAULT || dbDefine == DBDefine.AMAZON_REDSHIFT_DEFAULT) { 
 			return POSTGRE_GROUP;
 		} else if(dbDefine == DBDefine.HIVE_DEFAULT || dbDefine == DBDefine.HIVE2_DEFAULT) {
 			return HIVE_GROUP;
@@ -63,6 +65,8 @@ public enum DBGroupDefine {
 			return TAJO_GROUP;
 		} else if(dbDefine == DBDefine.ALTIBASE_DEFAULT) {
 			return ALTIBASE_GROUP;
+		} else if(dbDefine == DBDefine.DYNAMODB_DEFAULT) {
+			return DYNAMODB_GROUP;
 		} else {
 			return MONGODB_GROUP;
 		}

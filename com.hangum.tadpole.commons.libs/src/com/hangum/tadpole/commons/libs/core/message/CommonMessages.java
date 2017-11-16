@@ -53,9 +53,12 @@ public class CommonMessages {
 	public String ModifyMessage;
 	public String Save;
 	public String Run;
+	public String General;
 	
 	public String Refresh;
 	public String Clear;
+	
+	public String Others; // Others, 기타
 	
 	public String Title;
 	public String Description;
@@ -65,10 +68,9 @@ public class CommonMessages {
 	public String CreateTime;
 	
 	// 공통 출력 메시지. 
-		// 정의 명령이 완료 되었습니다.)
-		public String CommandCoompleted;
-		// 데이터를 가져오는 중입니다.
-		public String DataIsBeginAcquired;
+	// 정의 명령이 완료 되었습니다.)
+	public String CommandCoompleted;
+	
 		
 	// 회사 정보
 	public String CompanyInfo;
@@ -97,12 +99,20 @@ public class CommonMessages {
 	public String Role;
 
 	public String DatabaseInformation;
+	
+	public String Database;
+	
+	public String Databases;
+	
+	public String DatabaseList;
 
 	public String StartDate;
 
 	public String EndDate;
 
 	public String Authentication;
+	
+	public String TwoStepVerfication;
 
 	public String ID;
 
@@ -126,6 +136,75 @@ public class CommonMessages {
 
 	public String UserRole;
 
+	public String Prev;
+	
+	public String Next;
+
+	public String ExportCSV;
+
+	public String ExportExcel;
+	
+	public String OperationSuccessfullyCompleted;
+	
+	public String EnterYourEmailAddress;
+	
+	public String EnableGoogleAuthenticator;
+	public String GoogleAuthenticator;
+	public String GoogleAuthenticatorSettings;
+	
+	public String SecretKey; /* Google Authenticator */
+	public String QRCode; /* Google Authenticator */
+	public String OTP; /* Google Authenticator */
+	
+	public String Enable; /* Enable */
+	
+	public String Password; 
+	public String ChangePassword;
+
+	public String List;
+
+	public String Type;
+
+	public String Schema;
+
+	public String TotalRowIs;
+	
+	public String LoadingData;
+	public String PasswdOldNewIsSame;
+	public String ThisIsReadOnlyDatabase;
+
+	public String EnterNumbersOnly;
+	public String EnterNumbersOnlyWithItem;
+	
+	public String Days;
+	
+	public String Version;
+	
+	/* [%s] must be greater than or equal to %d and less than or equal to %d. */
+	public String InvalidRange_GEAndLEWithItem; 
+	
+	public String EnterItem;
+	
+	/* License */
+	public String EnterpriseLicense;
+	public String OpensourceLicense;
+	public String LicenseType;
+	public String ActivationDate;
+	public String ExpirationDate;
+	public String Remaining;
+	
+	/* Company */
+	public String EmailCustomerSupport;
+	public String TadpoleHubWebsite;
+	public String ThankYouForUsingTadpoleDBHub;
+	public String AboutTadpoleDBHub;
+	public String Manual;
+	
+	public String TadpoleAdministrator;
+	
+	public String StartTime; 
+
+	
 	public static CommonMessages get() {
 		return RWT.NLS.getISO8859_1Encoded(BUNDLE_NAME, CommonMessages.class);
 	}

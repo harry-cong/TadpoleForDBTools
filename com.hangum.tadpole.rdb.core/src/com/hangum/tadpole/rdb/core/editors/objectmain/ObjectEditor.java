@@ -12,6 +12,7 @@ package com.hangum.tadpole.rdb.core.editors.objectmain;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.HashMap;
 
 import org.apache.commons.lang.StringUtils;
@@ -61,6 +62,7 @@ import com.hangum.tadpole.rdb.core.Messages;
 import com.hangum.tadpole.rdb.core.dialog.db.DBInformationDialog;
 import com.hangum.tadpole.rdb.core.editors.main.MainEditor;
 import com.hangum.tadpole.rdb.core.editors.main.composite.ResultMainComposite;
+import com.hangum.tadpole.rdb.core.util.FindEditorAndWriteQueryUtil;
 import com.hangum.tadpole.rdb.core.util.GrantCheckerUtils;
 import com.hangum.tadpole.rdb.core.viewers.connections.DBIconsUtils;
 import com.hangum.tadpole.rdb.core.viewers.object.ExplorerViewer;
@@ -92,7 +94,11 @@ public class ObjectEditor extends MainEditor {
 		String strPartName = "";
 		if("".equals(qei.getObjectName())) strPartName = qei.getName(); //$NON-NLS-1$
 		else strPartName = String.format("%s (%s)", qei.getName(), qei.getObjectName()); //$NON-NLS-1$
-
+		dBResource = qei.getResourceDAO();
+		if(dBResource != null) {
+			strPartName = dBResource.getName();
+		}
+		
 		setSite(site);
 		setInput(input);
 		setPartName(strPartName);
@@ -149,8 +155,18 @@ public class ObjectEditor extends MainEditor {
 			public void widgetSelected(SelectionEvent e) {
 				SingleFileuploadDialog dialog = new SingleFileuploadDialog(PlatformUI.getWorkbench().getDisplay().getActiveShell(), Messages.get().MainEditor_36);
 				if(Dialog.OK == dialog.open()) {
-					if(logger.isDebugEnabled()) logger.debug("============> " +  dialog.getStrTxtFile()); //$NON-NLS-1$
-					appendText(dialog.getStrTxtFile());
+//					if(logger.isDebugEnabled()) logger.debug("============> " +  dialog.getStrFileContent()); //$NON-NLS-1$
+					if(SingleFileuploadDialog.ENUM_OPEN_TYPE.ADD_APPEND.name().equals(dialog.getStrComboOpenType())) {
+						appendText(dialog.getStrFileContent());
+					} else if(SingleFileuploadDialog.ENUM_OPEN_TYPE.NEW_WINDOW.name().equals(dialog.getStrComboOpenType())) {
+						FindEditorAndWriteQueryUtil.run(userDB, "", dialog.getStrFileContent(), true, PublicTadpoleDefine.OBJECT_TYPE.FUNCTIONS);
+					} else if(SingleFileuploadDialog.ENUM_OPEN_TYPE.REMOVE_AND_ADD.name().equals(dialog.getStrComboOpenType())) {
+						try {
+							browserEvaluate(EditorFunctionService.RE_NEW_TEXT, dialog.getStrFileContent());
+						} catch(Exception ee) {
+							logger.error("browser re_new_text error");
+						}
+					}
 				}
 			}
 		});
@@ -251,7 +267,7 @@ public class ObjectEditor extends MainEditor {
 					userDB.setSchema(comboSchema.getText());
 				}
 			}
-			comboSchema.setVisibleItemCount(userDB.getSchemas().size());
+			if(userDB.getSchemas().size() <= 15) comboSchema.setVisibleItemCount(userDB.getSchemas().size());
 			comboSchema.setText(userDB.getSchema());
 			comboSchema.pack();
 			new ToolItem(toolBar, SWT.SEPARATOR);
@@ -381,14 +397,19 @@ public class ObjectEditor extends MainEditor {
 //			}
 			
 			RequestResultDAO reqResultDAO = new RequestResultDAO();
+			reqResultDAO.setStartDateExecute(new Timestamp(System.currentTimeMillis()));
+			reqResultDAO.setIpAddress(reqQuery.getUserIp());
+			
 			try {
+				runPermissionSQLExecution(Messages.get().MainEditor_21, reqQuery, userDB, getUserType(), getUserEMail());
 				ExecuteDDLCommand.executSQL(userDB, reqResultDAO, reqQuery.getOriginalSql()); //$NON-NLS-1$
-
 			} catch(Exception e) {
 				logger.error("execute ddl", e); //$NON-NLS-1$
 				reqResultDAO.setResult(PublicTadpoleDefine.SUCCESS_FAIL.F.name());
 				reqResultDAO.setMesssage(e.getMessage());
 			} finally {
+				reqResultDAO.setEndDateExecute(new Timestamp(System.currentTimeMillis()));
+				
 				if(PublicTadpoleDefine.SUCCESS_FAIL.F.name().equals(reqResultDAO.getResult())) {
 					afterProcess(reqQuery, reqResultDAO, ""); //$NON-NLS-1$
 					
@@ -431,7 +452,7 @@ public class ObjectEditor extends MainEditor {
 	 * @param title
 	 */
 	private void afterProcess(RequestQuery reqQuery, RequestResultDAO reqResultDAO, String title) {
-		resultMainComposite.getCompositeQueryHistory().afterQueryInit(reqResultDAO);
+		resultMainComposite.getCompositeQueryHistory().saveExecutedSQLData(reqResultDAO, null);
 		resultMainComposite.resultFolderSel(EditorDefine.RESULT_TAB.TADPOLE_MESSAGE);
 		
 		if(PublicTadpoleDefine.SUCCESS_FAIL.S.name().equals(reqResultDAO.getResult())) {

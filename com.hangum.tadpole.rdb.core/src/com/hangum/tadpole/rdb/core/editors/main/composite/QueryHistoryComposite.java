@@ -40,6 +40,8 @@ import com.hangum.tadpole.commons.libs.core.message.CommonMessages;
 import com.hangum.tadpole.commons.libs.core.utils.LicenseValidator;
 import com.hangum.tadpole.commons.util.Utils;
 import com.hangum.tadpole.engine.query.sql.TadpoleSystem_ExecutedSQL;
+import com.hangum.tadpole.engine.sql.util.export.CSVExpoter;
+import com.hangum.tadpole.engine.sql.util.resultset.QueryExecuteResultDTO;
 import com.hangum.tadpole.engine.utils.TimeZoneUtil;
 import com.hangum.tadpole.mongodb.core.dialogs.msg.TadpoleSQLDialog;
 import com.hangum.tadpole.rdb.core.Messages;
@@ -183,18 +185,32 @@ public class QueryHistoryComposite extends Composite {
 	
 	/**
 	 * 쿼리 후 실행결과를 히스토리화면과 프로파일에 저장합니다.
+	 * 
+	 * @param reqResultDAO
+	 * @param rsDAO
+	 * @return
 	 */
-	public long afterQueryInit(RequestResultDAO reqResultDAO) {
+	public long saveExecutedSQLData(RequestResultDAO reqResultDAO, QueryExecuteResultDTO rsDAO) {
 		long longHistorySeq = -1;
 		
 		LicenseDAO licenseDAO = LicenseValidator.getLicense();
-		if(licenseDAO.isEnterprise()) {
+		if(licenseDAO.isValidate()) {
 			try {
+				
+				String strExecuteResultData = "";
+				if(rsDAO != null) {
+					if(PublicTadpoleDefine.YES_NO.YES.name().equals(rsDAO.getUserDB().getIs_result_save())) {
+						strExecuteResultData = CSVExpoter.makeContent(true, rsDAO, ',', "UTF-8");
+					}
+				}
+				
 				longHistorySeq = TadpoleSystem_ExecutedSQL.saveExecuteSQUeryResource(getRdbResultComposite().getUserSeq(), 
 								getRdbResultComposite().getUserDB(), 
 								PublicTadpoleDefine.EXECUTE_SQL_TYPE.EDITOR, 
+								strExecuteResultData,
 								reqResultDAO);
 			
+				
 			} catch(Exception e) {
 				logger.error("save the user query", e); //$NON-NLS-1$
 			}
@@ -242,18 +258,24 @@ public class QueryHistoryComposite extends Composite {
 		
 		item.setText(0, ""+gridSQLHistory.getRootItemCount()); //$NON-NLS-1$
 		item.setText(1, TimeZoneUtil.dateToStr(reqResultDAO.getStartDateExecute()));
-		item.setText(2, Utils.convLineToHtml(strSQL));
 		item.setToolTipText(2, strSQL);
-		
 		item.setText(3, ""+(reqResultDAO.getDuration())); //$NON-NLS-1$
 		item.setText(4, ""+reqResultDAO.getRows()); //$NON-NLS-1$
 		item.setText(5, reqResultDAO.getResult());
-		
-		item.setText(6, Utils.convLineToHtml(reqResultDAO.getMesssage()));
 		item.setToolTipText(6, reqResultDAO.getMesssage());
 		
 		if("F".equals(reqResultDAO.getResult())) { //$NON-NLS-1$
 			item.setBackground(SWTResourceManager.getColor(240, 180, 167));
+		}
+		
+		try {
+			item.setText(2, Utils.convLineToHtml(strSQL));
+			item.setText(6, Utils.convLineToHtml(reqResultDAO.getMesssage()));
+		} catch(Exception e) {
+			logger.error(String.format("failted to parse markup text is %s", strSQL));
+			
+			item.setText(2, "<![CDATA[" + strSQL + "]]>");
+			item.setText(6, "<![CDATA[" + reqResultDAO.getMesssage() + "]]>");
 		}
 	}
 	

@@ -27,6 +27,10 @@ public class AdminPreferenceDefine {
 	public static final String SYSTEM_VIEW_PRODUCT_TYPE_FILTER = _PREFIX + "SYSTEM_VIEW_PRODUCT_TYPE_FILTER";
 	public static final String SYSTEM_VIEW_PRODUCT_TYPE_FILTER_VALUE = "";
 	
+	/** GROUP NAME FILTER */
+	public static final String SYSTEM_VIEW_GROUP_NAME_FILTER = _PREFIX + "SYSTEM_VIEW_GROUP_NAME_FILTER";
+	public static final String SYSTEM_VIEW_GROUP_NAME_FILTER_VALUE = "";
+	
 	/** system login method */
 	public static final String SYSTEM_LOGIN_METHOD = _PREFIX + "SYSTEM_LOGIN_METHOD";
 	public static final String SYSTEM_LOGIN_METHOD_VALUE = "original";
@@ -55,11 +59,11 @@ public class AdminPreferenceDefine {
 	
 	/** 패스워드 최하 길이 */
 	public static final String PASSWD_LENGTH_LIMIT = _PREFIX + "PASSWD_LENGTH_LIMIT";
-	public static final String PASSWD_LENGTH_LIMIT_VALUE = "7";
+	public static final String PASSWD_LENGTH_LIMIT_VALUE = "8";
 	
-	/** 패스워드 최하 길이 */
+	/** 패스워드 최대 길이 */
 	public static final String PASSWD_DATE_LIMIT = _PREFIX + "PASSWD_DATE_LIMIT";
-	public static final String PASSWD_DATE_LIMIT_VALUE = "3650";
+	public static final String PASSWD_DATE_LIMIT_VALUE = "30";
 	
 	/** 사용자가 디비 추가 여부 */
 	public static final String IS_ADD_DB = _PREFIX + "IS_ADD_DB";
@@ -121,7 +125,7 @@ public class AdminPreferenceDefine {
 		public static final String SMTP_HOST_NAME_VALUE = "smtp.gmail.com";
 		
 		public static final String SMTP_PORT 			= "SMTP_PORT";
-		public static final String SMTP_PORT_VALUE 		= "587";
+		public static final String SMTP_PORT_VALUE 		= "465";
 		
 		public static final String SMTP_EMAIL 			= "SMTP_EMAIL";
 		public static final String SMTP_EMAIL_VALUE 	= "";

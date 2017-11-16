@@ -222,11 +222,11 @@ public class TadpoleDBLinkComposite extends AbstractObjectComposite {
 			
 			selectDataOfTable(strObjectName);
 		} else {
-			final String MSG_DataIsBeginAcquired = CommonMessages.get().DataIsBeginAcquired;
+			final String MSG_LoadingData = CommonMessages.get().LoadingData;
 			Job job = new Job(Messages.get().MainEditor_45) {
 				@Override
 				public IStatus run(IProgressMonitor monitor) {
-					monitor.beginTask(MSG_DataIsBeginAcquired, IProgressMonitor.UNKNOWN); //$NON-NLS-1$
+					monitor.beginTask(MSG_LoadingData, IProgressMonitor.UNKNOWN); //$NON-NLS-1$
 	
 					try {
 						showDBLinks = getDBLinkList(userDB);
@@ -339,6 +339,7 @@ public class TadpoleDBLinkComposite extends AbstractObjectComposite {
 	public void filter(String textSearch) {
 		dbLinkFilter.setSearchString(textSearch);
 		dbLinkListViewer.refresh();
+		TableUtil.packTable(dbLinkListViewer.getTable());
 	}
 
 	@Override

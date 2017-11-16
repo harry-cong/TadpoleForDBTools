@@ -86,39 +86,74 @@ public class AboutDialog extends Dialog {
 		composite_1.setLayout(new GridLayout(1, false));
 		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-		// Thanks, stariki
+		/* Product Name */
+		Text txtProductName = new Text(composite_1, SWT.NONE);
+		txtProductName.setText(LicenseValidator.getCustomerInfo());
+		txtProductName.setEditable(false);
+		
+		
+		/* Software Version */
 		Text txtVersion = new Text(composite_1, SWT.NONE) ;
-		txtVersion.setText(Messages.get().AboutAction_3 + " V" + SystemDefine.MAJOR_VERSION + " " + SystemDefine.SUB_VERSION); //$NON-NLS-1$ //$NON-NLS-2$
+		txtVersion.setText(CommonMessages.get().Version + ": v" 
+		                  + SystemDefine.MAJOR_VERSION + " " + SystemDefine.SUB_VERSION 
+		                  + " (r" + SystemDefine.RELEASE_DATE + ")" ); 
 		txtVersion.setEditable(false);
+		
+		/* License Type */
 
-		Text txtRleaseDate = new Text(composite_1, SWT.NONE) ;
-		txtRleaseDate.setText(Messages.get().AboutDialog_lblReleaseDate_text + " " + SystemDefine.RELEASE_DATE); //$NON-NLS-1$
-		txtRleaseDate.setEditable(false);
+		if(LicenseValidator.isEnterprise() == true) {
+			Text txtLicenseType = new Text(composite_1, SWT.NONE);
+			txtLicenseType.setText(CommonMessages.get().LicenseType + ": " + CommonMessages.get().EnterpriseLicense);
+					
+			Text txtActivationDate = new Text(composite_1, SWT.NONE);
+			txtActivationDate.setText(CommonMessages.get().ActivationDate + ": " + LicenseValidator.getActivationDate());
+			
+			Text txtExpirationDate = new Text(composite_1, SWT.NONE);
+			txtExpirationDate.setText(CommonMessages.get().ExpirationDate + ": " + LicenseValidator.getExpirationDate());
+			
+			Text txtRemaining =  new Text(composite_1, SWT.NONE);
+			if(LicenseValidator.getRemaining() < 0) {
+				txtRemaining.setText(CommonMessages.get().Remaining + ": Expired");
+			} else {
+				txtRemaining.setText(CommonMessages.get().Remaining + ": " + LicenseValidator.getRemaining() + " " + CommonMessages.get().Days);
+			}
+			
+		} else {
+			Text txtLicenseType = new Text(composite_1, SWT.NONE);
+			txtLicenseType.setText("License Type: " + CommonMessages.get().OpensourceLicense);
+			
+			Text txtActivationDate = new Text(composite_1, SWT.NONE);
+			txtActivationDate.setText(CommonMessages.get().ActivationDate + ": -");
+			
+			Text txtExpirationDate = new Text(composite_1, SWT.NONE);
+			txtExpirationDate.setText(CommonMessages.get().ExpirationDate + ": -");
+			
+			Text txtRemaining =  new Text(composite_1, SWT.NONE);
+			txtRemaining.setText(CommonMessages.get().Remaining + ": Unlimited");
+			
+		}
 		
 		new Label(composite_1, SWT.NONE);
 		
-		Label lblNewLabel0 = new Label(composite_1, SWT.NONE);
-		lblNewLabel0.setData( RWT.MARKUP_ENABLED, Boolean.TRUE );
-		lblNewLabel0.setText(Messages.get().AboutDialog_5);
-
-		Label lblNewLabel2 = new Label(composite_1, SWT.NONE);
-		lblNewLabel2.setData( RWT.MARKUP_ENABLED, Boolean.TRUE );
-		lblNewLabel2.setText(Messages.get().AboutDialog_6);
-		
-		Label lblNewLabel3 = new Label(composite_1, SWT.NONE);
-		lblNewLabel3.setData( RWT.MARKUP_ENABLED, Boolean.TRUE );
-		lblNewLabel3.setText(Messages.get().AboutDialog_7);
-		
-		Label lblLicenseLgpl = new Label(composite_1, SWT.NONE);
-		lblLicenseLgpl.setText(String.format("License : %s", LicenseValidator.getCustomerInfo()));
+		Label lblNewLabelUseLicense = new Label(composite_1, SWT.NONE);
+		lblNewLabelUseLicense.setData( RWT.MARKUP_ENABLED, Boolean.TRUE );
+		lblNewLabelUseLicense.setText(Messages.get().UseLicense);
 		
 		Label lblNewLabel4 = new Label(composite_1, SWT.NONE);
 		lblNewLabel4.setData( RWT.MARKUP_ENABLED, Boolean.TRUE );
-		lblNewLabel4.setText(Messages.get().AboutAction_5);
+		lblNewLabel4.setText(CommonMessages.get().ThankYouForUsingTadpoleDBHub);
 		
 		Label lblCompanyInfo = new Label(composite_1, SWT.NONE);
 		lblCompanyInfo.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
 		lblCompanyInfo.setText(CommonMessages.get().CompanyInfo);
+		
+		Label lblNewLabel0 = new Label(composite_1, SWT.NONE);
+		lblNewLabel0.setData( RWT.MARKUP_ENABLED, Boolean.TRUE );
+		lblNewLabel0.setText(CommonMessages.get().TadpoleHubWebsite + " " + CommonMessages.get().EmailCustomerSupport);
+//
+//		Label lblNewLabel2 = new Label(composite_1, SWT.NONE);
+//		lblNewLabel2.setData( RWT.MARKUP_ENABLED, Boolean.TRUE );
+//		lblNewLabel2.setText(CommonMessages.get().TadpoleHubWebsite);
 
 		return container;
 	}
@@ -137,6 +172,6 @@ public class AboutDialog extends Dialog {
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(635, 308);
+		return new Point(635, 400);
 	}
 }

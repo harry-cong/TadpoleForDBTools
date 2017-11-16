@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2017 hangum.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v2.1
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     hangum - initial API and implementation
+ ******************************************************************************/
 package com.hangum.tadpole.commons.util;
 
 import java.text.ParseException;
@@ -32,7 +42,19 @@ public class DateUtil {
 	 */
 	public static String getYearMonth() {
 		Calendar _cal = Calendar.getInstance();
-		return _cal.get(Calendar.YEAR) + "" + StringUtils.leftPad(""+_cal.get(Calendar.MONTH), 2, "0"); 
+		return _cal.get(Calendar.YEAR) + "" + StringUtils.leftPad(""+(_cal.get(Calendar.MONTH) + 1), 2, "0"); 
+	}
+	
+	/**
+	 * 현재 년월을 리턴합니다.
+	 * 
+	 * @param longTimeMills
+	 * @return
+	 */
+	public static String getYearMonth(long longTimeMills) {
+		Calendar _cal = Calendar.getInstance();
+		_cal.setTimeInMillis(longTimeMills);
+		return _cal.get(Calendar.YEAR) + "" + StringUtils.leftPad(""+(_cal.get(Calendar.MONTH) + 1), 2, "0"); 
 	}
 	
 	/**
@@ -44,6 +66,19 @@ public class DateUtil {
 	public static long afterMonthToMillsMonth(int month) {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, month);
+		
+		return cal.getTimeInMillis();
+	}
+	
+	/**
+	 * 몇개월 전
+	 * 
+	 * @param month
+	 * @return
+	 */
+	public static long beforeMonthToMillsMonth(int month) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH, -month);
 		
 		return cal.getTimeInMillis();
 	}
@@ -62,6 +97,19 @@ public class DateUtil {
 	}
 	
 	/**
+	 * 몇일 전
+	 * 
+	 * @param day
+	 * @return
+	 */
+	public static long beforeMonthToMillis(int day) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_YEAR, -day);
+		
+		return cal.getTimeInMillis();
+	}
+	
+	/**
 	 * 주어진 시간 기준으로 몇일 후
 	 * 
 	 * @param time
@@ -72,6 +120,21 @@ public class DateUtil {
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(time);
 		cal.add(Calendar.DAY_OF_YEAR, day);
+		
+		return cal.getTimeInMillis();
+	}
+	
+	/**
+	 * 주어진 시간 기준으로 몇일 후
+	 * 
+	 * @param time
+	 * @param intMaxDay
+	 * @return
+	 */
+	public static long beforeMonthToMillis(long time, int day) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(time);
+		cal.add(Calendar.DAY_OF_YEAR, -day);
 		
 		return cal.getTimeInMillis();
 	}

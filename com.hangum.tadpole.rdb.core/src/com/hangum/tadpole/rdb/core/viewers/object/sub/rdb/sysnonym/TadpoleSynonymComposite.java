@@ -326,11 +326,11 @@ public class TadpoleSynonymComposite extends AbstractObjectComposite {
 			
 			selectDataOfTable(strObjectName);
 		} else {
-			final String MSG_DataIsBeginAcquired = CommonMessages.get().DataIsBeginAcquired;
+			final String MSG_LoadingData = CommonMessages.get().LoadingData;
 			Job job = new Job(Messages.get().MainEditor_45) {
 				@Override
 				public IStatus run(IProgressMonitor monitor) {
-					monitor.beginTask(MSG_DataIsBeginAcquired, IProgressMonitor.UNKNOWN); //$NON-NLS-1$
+					monitor.beginTask(MSG_LoadingData, IProgressMonitor.UNKNOWN); //$NON-NLS-1$
 	
 					try {
 						showSynonyms = getSynonymList(userDB);
@@ -447,6 +447,7 @@ public class TadpoleSynonymComposite extends AbstractObjectComposite {
 	public void filter(String textSearch) {
 		synonymFilter.setSearchString(textSearch);
 		synonymListViewer.refresh();
+		TableUtil.packTable(synonymListViewer.getTable());
 	}
 
 	@Override

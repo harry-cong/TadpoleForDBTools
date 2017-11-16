@@ -37,7 +37,7 @@ public class BasicTDBSQLParser implements TDBSQLParser {
 	private static final Logger logger = Logger.getLogger(BasicTDBSQLParser.class);
 	
 	/** base statement pattern */
-	protected static final String REGEXP_STATEMENT = "^SELECT.*|^EXPLAIN.*|^SHOW.*|^DESCRIBE.*|^DESC.*|^CHECK.*|^PRAGMA.*|^WITH.*|^OPTIMIZE.*";
+	protected static final String REGEXP_STATEMENT = "^SELECT.*|^EXPLAIN.*|^SHOW.*|^DESCRIBE.*|^DESC.*|^CHECK.*|^PRAGMA.*|^WITH.*|^OPTIMIZE.*|^DECLARE.*|^FETCH.*";
 	
 	private static final String MSSQL_PATTERN_STATEMENT = "|^SP_HELP.*|^EXEC.*";
 	private static final String ORACLE_PATTERN_STATEMENT = "";
@@ -69,10 +69,11 @@ public class BasicTDBSQLParser implements TDBSQLParser {
 			queryInfoDTO.setStatement(true);
 			queryInfoDTO.setSqlType(SQL_TYPE.DML);
 			
-			parseDML(sql, queryInfoDTO);
+			queryInfoDTO.setQueryType(SQLUtil.sqlQueryType(sql));
 		} else {
 			queryInfoDTO.setStatement(false);
 			queryInfoDTO.setSqlType(SQL_TYPE.DDL);
+			queryInfoDTO.setQueryType(SQLUtil.sqlQueryType(sql));
 			
 			parseDDL(sql, queryInfoDTO);
 		}
@@ -90,33 +91,5 @@ public class BasicTDBSQLParser implements TDBSQLParser {
 		ParserDDL parseDDL = new ParserDDL();
 		parseDDL.parseQuery(sql, queryInfoDTO);
 	}
-	
-	/**
-	 * parse dml
-	 * 
-	 * @param sql
-	 * @return
-	 */
-	protected void parseDML(String sql, QueryInfoDTO queryInfoDTO) {
-		QUERY_DML_TYPE queryType = QUERY_DML_TYPE.UNKNOWN;
-		try {
-			Statement statement = CCJSqlParserUtil.parse(sql);
-			if(statement instanceof Select) {
-				queryType = QUERY_DML_TYPE.SELECT;
-			} else if(statement instanceof Insert) {
-				queryType = QUERY_DML_TYPE.INSERT;
-			} else if(statement instanceof Update) {
-				queryType = QUERY_DML_TYPE.UPDATE;
-			} else if(statement instanceof Delete) {
-				queryType = QUERY_DML_TYPE.DELETE;
-			}
-			
-		} catch (Throwable e) {
-			logger.error(String.format("sql parse exception. [ %s ]", sql));
-		}
-		
-		queryInfoDTO.setQueryType(queryType);
-	}
-
 	
 }

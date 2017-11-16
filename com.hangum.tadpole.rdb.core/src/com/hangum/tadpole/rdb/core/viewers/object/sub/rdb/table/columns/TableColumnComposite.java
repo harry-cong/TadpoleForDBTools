@@ -135,8 +135,8 @@ public class TableColumnComposite extends AbstractTableComposite {
 	 * table table column
 	 */
 	protected void createTableColumne() {
-		String[] name 		= {Messages.get().Field, Messages.get().Type, Messages.get().Key, Messages.get().Comment, Messages.get().TadpoleTableComposite_8, Messages.get().Default, Messages.get().TadpoleTableComposite_10};
-		int[] size 			= {120, 90, 100, 50, 50, 50, 50};
+		String[] name 		= {Messages.get().Field, Messages.get().Type, Messages.get().Key, Messages.get().TadpoleTableComposite_8, Messages.get().Default, Messages.get().TadpoleTableComposite_10, Messages.get().Comment};
+		int[] size 			= {120, 90, 50, 50, 50, 50, 100};
 		
 		// table column tooltip
 		ColumnViewerToolTipSupport.enableFor(tableColumnViewer);
@@ -240,10 +240,15 @@ public class TableColumnComposite extends AbstractTableComposite {
 		
 		// menu	
 		final MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
-		if(DBGroupDefine.MYSQL_GROUP == getUserDB().getDBGroup()) {
-			menuMgr.add(tableColumnModifyAction);
-			menuMgr.add(tableColumnDeleteAction);
-			menuMgr.add(new Separator());
+		
+		if(!PublicTadpoleDefine.YES_NO.YES.name().equals(getUserDB().getIs_readOnlyConnect())) {
+			if(PublicTadpoleDefine.YES_NO.NO.name().equals(getUserDB().getDbAccessCtl().getDdl_lock())) {
+				if(DBGroupDefine.MYSQL_GROUP == getUserDB().getDBGroup()) {
+					menuMgr.add(tableColumnModifyAction);
+					menuMgr.add(tableColumnDeleteAction);
+					menuMgr.add(new Separator());
+				}
+			}
 		}
 		menuMgr.add(tableColumnSelectionAction);
 

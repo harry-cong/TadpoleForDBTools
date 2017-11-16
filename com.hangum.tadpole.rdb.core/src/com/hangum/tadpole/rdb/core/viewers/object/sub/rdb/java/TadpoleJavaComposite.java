@@ -251,11 +251,11 @@ public class TadpoleJavaComposite extends AbstractObjectComposite {
 
 			selectDataOfTable(strObjectName);
 		} else {
-			final String MSG_DataIsBeginAcquired = CommonMessages.get().DataIsBeginAcquired;
+			final String MSG_LoadingData = CommonMessages.get().LoadingData;
 			Job job = new Job(Messages.get().MainEditor_45) {
 				@Override
 				public IStatus run(IProgressMonitor monitor) {
-					monitor.beginTask(MSG_DataIsBeginAcquired, IProgressMonitor.UNKNOWN); //$NON-NLS-1$
+					monitor.beginTask(MSG_LoadingData, IProgressMonitor.UNKNOWN); //$NON-NLS-1$
 	
 					try {
 						showJava = getJavaList(userDB);
@@ -366,6 +366,7 @@ public class TadpoleJavaComposite extends AbstractObjectComposite {
 	public void filter(String textSearch) {
 		javaFilter.setSearchString(textSearch);
 		javaListViewer.refresh();
+		TableUtil.packTable(javaListViewer.getTable());
 	}
 
 	@Override

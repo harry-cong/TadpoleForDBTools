@@ -347,6 +347,7 @@ public class TadpoleViewerComposite extends AbstractObjectComposite {
 	public void filter(String textSearch) {
 		viewFilter.setSearchText(textSearch);
 		viewListViewer.refresh();
+		TableUtil.packTable(viewListViewer.getTable());
 	}
 
 	/**
@@ -441,8 +442,8 @@ public class TadpoleViewerComposite extends AbstractObjectComposite {
 	 * view column
 	 */
 	protected void createViewColumne() {
-		String[] name = {Messages.get().Field, Messages.get().Type, Messages.get().Key, Messages.get().Comment, Messages.get().Null, Messages.get().Default, Messages.get().Extra};
-		int[] size = {120, 70, 50, 100, 50, 50, 50};
+		String[] name 		= {Messages.get().Field, Messages.get().Type, Messages.get().Key, Messages.get().TadpoleTableComposite_8, Messages.get().Default, Messages.get().TadpoleTableComposite_10, Messages.get().Comment};
+		int[] size 			= {120, 90, 50, 50, 50, 50, 100};
 
 		ColumnViewerToolTipSupport.enableFor(viewColumnViewer);
 		for (int i=0; i<name.length; i++) {

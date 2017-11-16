@@ -1,5 +1,9 @@
 package com.hangum.tadpole.commons.libs.core.dao;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * License dao
  * 
@@ -9,10 +13,14 @@ package com.hangum.tadpole.commons.libs.core.dao;
 public class LicenseDAO {
 	boolean isValidate = false;
 	boolean isEnterprise = false;
+	String term = "";
 	String msg = "";
 	
 	String customer_email = "";
 	String customer = "";
+	
+	String mActivationDate = "";
+	String mExpirationDate = "";
 	
 	public LicenseDAO() {
 	}
@@ -72,7 +80,7 @@ public class LicenseDAO {
 	public void setCustomer_email(String customer_email) {
 		this.customer_email = customer_email;
 	}
-
+	
 	/**
 	 * @return the customer
 	 */
@@ -85,6 +93,57 @@ public class LicenseDAO {
 	 */
 	public void setCustomer(String customer) {
 		this.customer = customer;
+	}
+
+	/**
+	 * @return the term
+	 */
+	public String getTerm() {
+		return term;
+	}
+
+	/**
+	 * @param term the term to set
+	 */
+	public void setTerm(String term) {
+		this.term = term;
+	}
+	
+	public void setActivationDate(String aDate) {
+		mActivationDate = aDate;
+	}
+	
+	public String getActivationDate() {
+		return mActivationDate;
+	}
+	
+	public void setExpirationDate(String aDate) {
+		this.mExpirationDate = aDate;
+	}
+	
+	public String getExpirationDate() {
+		return mExpirationDate;
+	}
+	
+	public long getRemaining() {
+		long sRemaining = 0;
+		
+		if( this.mExpirationDate != "" ) {
+			SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			
+			try {
+				Date sExpirationDate = sDateFormat.parse(this.mExpirationDate);
+				Date sToday = new Date (); 
+				
+				/* Get how many days left */
+				sRemaining = (sExpirationDate.getTime() - sToday.getTime()) / (24 * 60 * 60 * 1000); 
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return sRemaining;
 	}
 	
 }

@@ -21,11 +21,15 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import com.amazonaws.eclipse.dynamodb.editor.DynamoDBTableEditor;
+import com.amazonaws.eclipse.dynamodb.editor.TableEditorInput;
 import com.hangum.tadpole.commons.exception.dialog.ExceptionDetailsErrorDialog;
 import com.hangum.tadpole.commons.libs.core.define.PublicTadpoleDefine.OBJECT_TYPE;
 import com.hangum.tadpole.commons.libs.core.message.CommonMessages;
+import com.hangum.tadpole.engine.define.DBGroupDefine;
 import com.hangum.tadpole.engine.manager.TadpoleSQLManager;
 import com.hangum.tadpole.engine.query.dao.mysql.TableColumnDAO;
 import com.hangum.tadpole.engine.query.dao.mysql.TableDAO;
@@ -60,30 +64,6 @@ public class TableDataEditorAction extends AbstractObjectSelectAction {
 	
 	@Override
 	public void run(IStructuredSelection selection, UserDBDAO userDB, OBJECT_TYPE actionType) {
-//		try {
-//			PublicTadpoleDefine.QUERY_DML_TYPE queryType = QUERY_DML_TYPE.INSERT;
-//			if(queryType == QUERY_DML_TYPE.INSERT) {
-//				if(PublicTadpoleDefine.YES_NO.YES.name().equals(userDB.getDbAccessCtl().getInsert_lock())) {
-//					throw new Exception(Messages.get().MainEditor_21);
-//				}
-//			}
-//			queryType = QUERY_DML_TYPE.UPDATE;
-//			if(queryType == QUERY_DML_TYPE.UPDATE) {
-//				if(PublicTadpoleDefine.YES_NO.YES.name().equals(userDB.getDbAccessCtl().getUpdate_lock())) {
-//					throw new Exception(Messages.get().MainEditor_21);
-//				}
-//			}
-//			queryType = QUERY_DML_TYPE.DELETE;
-//			if(queryType == QUERY_DML_TYPE.DELETE) {
-//				if(PublicTadpoleDefine.YES_NO.YES.name().equals(userDB.getDbAccessCtl().getDelete_locl())) {
-//					throw new Exception(Messages.get().MainEditor_21);
-//				}
-//			}
-//		} catch(Exception e) {
-//			MessageDialog.openError(getWindow().getShell(),CommonMessages.get().Error, e.getMessage());
-//			return;
-//		}
-		
 		try {
 			if(!GrantCheckerUtils.ifExecuteQuery(userDB)) return;
 		} catch (Exception e) {
@@ -92,24 +72,36 @@ public class TableDataEditorAction extends AbstractObjectSelectAction {
 		}
 		
 		TableDAO tableDAO = (TableDAO)selection.getFirstElement();
-		try {
-			// get the table columns
-			SqlMapClient sqlClient = TadpoleSQLManager.getInstance(userDB);
-			Map<String, String> mapParam = new HashMap<String, String>();
-			mapParam.put("schema", tableDAO.getSchema_name()); //$NON-NLS-1$
-			mapParam.put("table", tableDAO.getName()); //$NON-NLS-1$
-			List<TableColumnDAO> showTableColumns = sqlClient.queryForList("tableColumnList", mapParam); //$NON-NLS-1$
-
-			// Open the table director editor
-			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			
-			DBTableEditorInput dbEditorInput = new DBTableEditorInput(tableDAO, userDB, showTableColumns);
-			page.openEditor(dbEditorInput, TableInformationEditor.ID, false);
-		} catch(Exception e) {
-			logger.error("Load the table data", e); //$NON-NLS-1$
-
-			Status errStatus = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e); //$NON-NLS-1$
-			ExceptionDetailsErrorDialog.openError(null,CommonMessages.get().Error, Messages.get().ExplorerViewer_39, errStatus); //$NON-NLS-1$
+		if(userDB.getDBGroup() == DBGroupDefine.DYNAMODB_GROUP) {
+			try {
+	            IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+	            workbenchPage.openEditor(new TableEditorInput(userDB.getUsers(), userDB.getPasswd(), userDB.getDb(), tableDAO.getName()), DynamoDBTableEditor.ID);
+	        } catch ( PartInitException e ) {
+	        	logger.error("Load the table data", e); //$NON-NLS-1$
+	        	
+				Status errStatus = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e); //$NON-NLS-1$
+				ExceptionDetailsErrorDialog.openError(null,CommonMessages.get().Error, Messages.get().ExplorerViewer_39, errStatus); //$NON-NLS-1$
+	        }
+		} else {
+			try {
+				// get the table columns
+				SqlMapClient sqlClient = TadpoleSQLManager.getInstance(userDB);
+				Map<String, String> mapParam = new HashMap<String, String>();
+				mapParam.put("schema", tableDAO.getSchema_name()); //$NON-NLS-1$
+				mapParam.put("table", tableDAO.getName()); //$NON-NLS-1$
+				List<TableColumnDAO> showTableColumns = sqlClient.queryForList("tableColumnList", mapParam); //$NON-NLS-1$
+	
+				// Open the table director editor
+				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				
+				DBTableEditorInput dbEditorInput = new DBTableEditorInput(tableDAO, userDB, showTableColumns);
+				page.openEditor(dbEditorInput, TableInformationEditor.ID, false);
+			} catch(Exception e) {
+				logger.error("Load the table data", e); //$NON-NLS-1$
+	
+				Status errStatus = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e); //$NON-NLS-1$
+				ExceptionDetailsErrorDialog.openError(null,CommonMessages.get().Error, Messages.get().ExplorerViewer_39, errStatus); //$NON-NLS-1$
+			}
 		}
 	}
 

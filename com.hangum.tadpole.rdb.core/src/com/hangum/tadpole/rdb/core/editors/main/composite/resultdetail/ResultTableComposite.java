@@ -11,6 +11,7 @@
 package com.hangum.tadpole.rdb.core.editors.main.composite.resultdetail;
 
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -42,13 +43,17 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import com.hangum.tadpole.commons.dialogs.message.TadpoleImageViewDialog;
+import com.hangum.tadpole.commons.libs.core.dao.LicenseDAO;
 import com.hangum.tadpole.commons.libs.core.define.PublicTadpoleDefine;
 import com.hangum.tadpole.commons.libs.core.message.CommonMessages;
+import com.hangum.tadpole.commons.libs.core.utils.LicenseValidator;
 import com.hangum.tadpole.engine.define.DBGroupDefine;
 import com.hangum.tadpole.engine.query.dao.mysql.TableColumnDAO;
 import com.hangum.tadpole.engine.query.dao.system.UserDBDAO;
+import com.hangum.tadpole.engine.query.sql.TadpoleSystem_ExecutedSQL;
 import com.hangum.tadpole.engine.query.sql.TadpoleSystem_UserInfoData;
 import com.hangum.tadpole.engine.sql.util.RDBTypeToJavaTypeUtils;
+import com.hangum.tadpole.engine.sql.util.export.CSVExpoter;
 import com.hangum.tadpole.engine.sql.util.resultset.QueryExecuteResultDTO;
 import com.hangum.tadpole.engine.sql.util.resultset.TadpoleResultSet;
 import com.hangum.tadpole.engine.sql.util.tables.SQLResultFilter;
@@ -72,7 +77,6 @@ import com.hangum.tadpole.rdb.core.editors.main.composite.plandetail.mysql.MySQL
 import com.hangum.tadpole.rdb.core.editors.main.composite.tail.ResultTailComposite;
 import com.hangum.tadpole.rdb.core.editors.main.utils.TableToDataUtils;
 import com.hangum.tadpole.rdb.core.extensionpoint.definition.IMainEditorExtension;
-import com.hangum.tadpole.rdb.core.util.QueryResultSaved;
 import com.hangum.tadpole.session.manager.SessionManager;
 import com.swtdesigner.SWTResourceManager;
 
@@ -204,8 +208,9 @@ public class ResultTableComposite extends AbstractResultDetailComposite {
 				
 				final TableItem item = tableResult.getSelection()[0];
 				for (int i=0; i<tableResult.getColumnCount(); i++) {
+					
 					if (item.getBounds(i).contains(event.x, event.y)) {
-						Map<Integer, Object> mapColumns = getRsDAO().getDataList().getData().get(tableResult.getSelectionIndex());
+						Map<Integer, Object> mapColumns = getRsDAO().getDataList().getData().get(getColumnIndex(item));
 						// execute extension start =============================== 
 						IMainEditorExtension[] extensions = getRdbResultComposite().getRdbResultComposite().getMainEditor().getMainEditorExtions();
 						for (IMainEditorExtension iMainEditorExtension : extensions) {
@@ -386,6 +391,17 @@ public class ResultTableComposite extends AbstractResultDetailComposite {
 	}
 	
 	/**
+	 * table column의 index
+	 * 소트를 통해 데이터행의 위치가 바꿀수 있으므로.....	-1 은 행의 넘버가 1부터 시작해서.
+	 * 
+	 * @param item
+	 * @return
+	 */
+	private int getColumnIndex(TableItem item) {
+		return Integer.parseInt(item.getText()) -1;
+	}
+	
+	/**
 	 * select table column to editor
 	 */
 	private TableColumnDAO findSelectRowData() {
@@ -399,7 +415,7 @@ public class ResultTableComposite extends AbstractResultDetailComposite {
 			
 			for (int i=0; i<tableResult.getColumnCount(); i++) {
 				if (item.getBounds(i).contains(eventTableSelect.x, eventTableSelect.y)) {
-					Map<Integer, Object> mapColumns = getRsDAO().getDataList().getData().get(tableResult.getSelectionIndex());
+					Map<Integer, Object> mapColumns = getRsDAO().getDataList().getData().get(getColumnIndex(item));
 					// execute extension start =============================== 
 					IMainEditorExtension[] extensions = getRdbResultComposite().getRdbResultComposite().getMainEditor().getMainEditorExtions();
 					for (IMainEditorExtension iMainEditorExtension : extensions) {
@@ -434,7 +450,7 @@ public class ResultTableComposite extends AbstractResultDetailComposite {
 			
 			for (int i=0; i<tableResult.getColumnCount(); i++) {
 				if (item.getBounds(i).contains(eventTableSelect.x, eventTableSelect.y)) {
-					Map<Integer, Object> mapColumns = getRsDAO().getDataList().getData().get(tableResult.getSelectionIndex());
+					Map<Integer, Object> mapColumns = getRsDAO().getDataList().getData().get(getColumnIndex(item));
 					// execute extension start =============================== 
 					IMainEditorExtension[] extensions = getRdbResultComposite().getRdbResultComposite().getMainEditor().getMainEditorExtions();
 					for (IMainEditorExtension iMainEditorExtension : extensions) {
@@ -589,7 +605,10 @@ public class ResultTableComposite extends AbstractResultDetailComposite {
 						if(logger.isDebugEnabled()) logger.debug("==> old count is " + oldTadpoleResultSet.getData().size() );
 						/** 쿼리 결과를 저장합니다 */
 						if(PublicTadpoleDefine.YES_NO.YES.name().equals(rsDAO.getUserDB().getIs_result_save())) {
-							QueryResultSaved.saveQueryResult(""+longHistorySeq, newRsDAO);
+							LicenseDAO licenseDAO = LicenseValidator.getLicense();
+							if(licenseDAO.isValidate()) {
+								TadpoleSystem_ExecutedSQL.insertResourceResultData(longHistorySeq, new Timestamp(System.currentTimeMillis()), CSVExpoter.makeContent(false, rsDAO, ',', "UTF-8"));
+							}
 						} 
 						
 						oldTadpoleResultSet.getData().addAll(newRsDAO.getDataList().getData());

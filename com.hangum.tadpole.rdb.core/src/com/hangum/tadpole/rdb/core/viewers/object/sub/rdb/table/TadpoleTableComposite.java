@@ -222,7 +222,8 @@ public class TadpoleTableComposite extends AbstractObjectComposite {
 					
 					Object objDAO = is.getFirstElement();
 					TableDAO tableDao = (TableDAO) objDAO;
-					if (selectTableName.equals(tableDao.getName())) return;
+					// SelectionChanged 이벤트는 어차피 테이블 선택이 변경되었을때 발생하니까 굳이 한번더 비교하지 않아도 되지 않을까요?
+					//if (selectTableName.equals(tableDao.getName())) return;
 					
 					// column이 리프레쉬 될때만 selectTableName 값이 갱신되서 인덱스, 제약조건, 트리거 리프레쉬 전에 현재 선택된 테이블명 설정해줌.
 					setSelectTableName(tableDao.getName());
@@ -309,6 +310,8 @@ public class TadpoleTableComposite extends AbstractObjectComposite {
 			@Override
 			public String getText(Object element) {
 				TableDAO table = (TableDAO) element;
+
+        if(getUserDB().getDBGroup() == DBGroupDefine.MSSQL_GROUP) return table.getFullName();
 				return table.getName();
 			}
 		});
@@ -435,7 +438,9 @@ public class TadpoleTableComposite extends AbstractObjectComposite {
 				createIndexes();
 				createTrigger();
 			} else if(DBGroupDefine.HIVE_GROUP == userDB.getDBGroup() ||
-					DBGroupDefine.TAJO_GROUP == userDB.getDBGroup()) {
+					DBGroupDefine.TAJO_GROUP == userDB.getDBGroup() ||
+					DBGroupDefine.DYNAMODB_GROUP == userDB.getDBGroup()
+			) {
 				// do not show them
 			} else {
 				createIndexes();
@@ -553,7 +558,7 @@ public class TadpoleTableComposite extends AbstractObjectComposite {
 		// menu
 		final MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
 		final DBGroupDefine dbGroup = getUserDB().getDBGroup();
-		if(DBGroupDefine.HIVE_GROUP == dbGroup || DBGroupDefine.TAJO_GROUP == dbGroup) {
+		if(DBGroupDefine.HIVE_GROUP == dbGroup || DBGroupDefine.TAJO_GROUP == dbGroup ) {
 			if(PermissionChecker.isShow(getUserRoleType(), getUserDB())) {
 				
 				if(!isDDLLock()) {
@@ -566,6 +571,33 @@ public class TadpoleTableComposite extends AbstractObjectComposite {
 			menuMgr.add(refreshAction_Table);
 			menuMgr.add(new Separator());
 			menuMgr.add(selectStmtAction);
+			
+		} else if(DBGroupDefine.DYNAMODB_GROUP == dbGroup) {
+			if(PermissionChecker.isShow(getUserRoleType(), getUserDB())) {
+				
+				if(!isDDLLock()) {
+					menuMgr.add(creatAction_Table);
+					menuMgr.add(dropAction_Table);
+					menuMgr.add(new Separator());
+					menuMgr.add(viewDDLAction);
+				}
+				
+				if(!(isInsertLock() || isUpdateLock() || isDeleteLock())) {
+					menuMgr.add(new Separator());
+					menuMgr.add(tableDataEditorAction);
+				}
+			}	
+			
+			menuMgr.add(refreshAction_Table);
+			menuMgr.add(new Separator());
+			menuMgr.add(selectStmtAction);
+			if(PermissionChecker.isShow(getUserRoleType(), getUserDB())) {
+				
+				if(!isInsertLock()) menuMgr.add(insertStmtAction);
+				if(!isUpdateLock()) menuMgr.add(updateStmtAction);
+				if(!isDeleteLock()) menuMgr.add(deleteStmtAction);
+			}
+			
 		// others rdb
 		} else {
 			menuMgr.add(refreshAction_Table);
@@ -667,11 +699,11 @@ public class TadpoleTableComposite extends AbstractObjectComposite {
 			getTabFolderObject().setSelection(tbtmTable);
 			
 		} else {
-			final String MSG_DataIsBeginAcquired = CommonMessages.get().DataIsBeginAcquired;
+			final String MSG_LoadingData = CommonMessages.get().LoadingData;
 			Job job = new Job(Messages.get().MainEditor_45) {
 				@Override
 				public IStatus run(IProgressMonitor monitor) {
-					monitor.beginTask(MSG_DataIsBeginAcquired, IProgressMonitor.UNKNOWN);
+					monitor.beginTask(MSG_LoadingData, IProgressMonitor.UNKNOWN);
 					
 					try {
 						listTablesDAO = TadpoleObjectQuery.getTableList(userDB);
@@ -808,6 +840,7 @@ public class TadpoleTableComposite extends AbstractObjectComposite {
 	public void filter(String textSearch) {
 		tableFilter.setSearchText(textSearch);
 		tableListViewer.refresh();
+		TableUtil.packTable(tableListViewer.getTable());
 	}
 	
 	/**

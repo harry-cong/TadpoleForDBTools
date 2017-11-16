@@ -54,8 +54,10 @@ public class UserDBDAO extends TDBDBDAO implements Cloneable {
 	// default value is 00:00
 	protected Timestamp terms_of_use_starttime 	= new Timestamp(System.currentTimeMillis());
 
-		// default value is 100 years after
+	// default value is 100 years after
 	protected  Timestamp terms_of_use_endtime  	= new Timestamp(DateUtil.afterMonthToMillsMonth(24));
+	// user db role description
+	protected String description = "";
 	
 	/**
 	 * @return the role_seq
@@ -140,6 +142,14 @@ public class UserDBDAO extends TDBDBDAO implements Cloneable {
 	public void setIs_resource_download(String is_resource_download) {
 		this.is_resource_download = is_resource_download;
 	}	
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
 	// ====================================== end
 
 	protected int seq = -999;
@@ -228,6 +238,11 @@ public class UserDBDAO extends TDBDBDAO implements Cloneable {
     
     /** is query result save? */
     protected String is_result_save		= PublicTadpoleDefine.YES_NO.NO.name();
+    
+    /** 쿼리 데이터 변경 - 2017.07.02 */
+    protected String is_convert_data	= PublicTadpoleDefine.YES_NO.NO.name();
+    protected String char_source	= "";
+    protected String char_target	= "";
     
     /** db access control */
     protected DBAccessControlDAO dbAccessCtl = new DBAccessControlDAO();
@@ -762,4 +777,46 @@ public class UserDBDAO extends TDBDBDAO implements Cloneable {
 		this.is_result_save = is_result_save;
 	}
 
+	/**
+	 * @return the is_convert_data
+	 */
+	public String getIs_convert_data() {
+		return is_convert_data;
+	}
+
+	/**
+	 * @param is_convert_data the is_convert_data to set
+	 */
+	public void setIs_convert_data(String is_convert_data) {
+		this.is_convert_data = is_convert_data;
+	}
+
+	/**
+	 * @return the char_source
+	 */
+	public String getChar_source() {
+		return char_source;
+	}
+
+	/**
+	 * @param char_source the char_source to set
+	 */
+	public void setChar_source(String char_source) {
+		this.char_source = char_source;
+	}
+
+	/**
+	 * @return the char_target
+	 */
+	public String getChar_target() {
+		return char_target;
+	}
+
+	/**
+	 * @param char_target the char_target to set
+	 */
+	public void setChar_target(String char_target) {
+		this.char_target = char_target;
+	}
+	
 }

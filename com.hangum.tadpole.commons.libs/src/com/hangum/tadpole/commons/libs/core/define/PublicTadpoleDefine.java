@@ -27,6 +27,9 @@ public class PublicTadpoleDefine {
 	/** URL system version information */
 	public static final String URL_SYSTEM_VERION = String.format("?%s%s=%s", SystemDefine.MAJOR_VERSION, SystemDefine.SUB_VERSION, SystemDefine.RELEASE_DATE);
 	
+	/** default search count */
+	public static final int INT_SEARCH_COUNT = 25;
+	
 	/** set user info */
 	public static String CERT_USER_INFO = "";
 	
@@ -54,6 +57,9 @@ public class PublicTadpoleDefine {
 	
 	/** Default resource name */
 	public static final String DEFAUL_RESOURCE_NAME = "_TDB_DEF_NAME_";
+	
+	/** filter type */
+	public static enum FILTER_TYPE {INCLUDE, EXCLUDE};
 	
 	/** mail type */
 	public static enum MAIL_TYPE {NONE, SEND_GRID, SMTP};
@@ -228,12 +234,12 @@ public class PublicTadpoleDefine {
 	 *
 	 */
 	public enum DBOperationType {
-		PRODUCTION("Production Sever"),
-		DR("Disaster recovery"), 
-		DEVELOP("Develop Sever"), 
-		TEST("Test Sever"),
-		BACKUP("Backup Sever"),
-		OTHERS("Others Sever");
+		PRODUCTION("Production Server"),
+		DR("Disaster Recovery"), 
+		DEVELOP("Development Server"), 
+		TEST("Test Server"),
+		BACKUP("Backup Server"),
+		OTHERS("Others");
 
 		private String typeName;
 		
@@ -259,7 +265,7 @@ public class PublicTadpoleDefine {
 	public static enum EDITOR_OPEN_TYPE {NONE, STRING, FILE};
 	
 	/** save resource type */
-	public static enum RESOURCE_TYPE {ERD, SQL, AUTO_SQL};
+	public static enum RESOURCE_TYPE {ERD, SQL, AUTO_SQL, OBJECT};
 	
 	/** define SQL, ERD shared type */
 	public static enum SHARED_TYPE {PUBLIC, PRIVATE};
@@ -268,7 +274,7 @@ public class PublicTadpoleDefine {
 	public static enum SQL_STATEMENT_TYPE {NONE, PREPARED_STATEMENT};
 	
 	/** executed sql history type */
-	public static enum EXECUTE_SQL_TYPE {EDITOR, SESSION, API};
+	public static enum EXECUTE_SQL_TYPE {EDITOR, EDITOR_DOWNLOAD, SESSION, API};
 
 	/** 쿼리 실행 결과  */
 	public static enum QUERY_EXECUTE_STATUS {SUCCESS, USER_INTERRUPT, SQL_EXCEPTION, UNKNOW_EXCEPTION};
@@ -298,11 +304,7 @@ public class PublicTadpoleDefine {
 		SCHEDULE,
 		COLUMNS,
 		JOBS,
-		JAVA,
-		
-		VERTEX,	/* agens graph vertex */
-		EDGE,	/* agens graph vertex */
-		GRAPHPATH	/* agens graph path */
+		JAVA
 	};
 
 	/** sql type - http://www.orafaq.com/faq/what_are_the_difference_between_ddl_dml_and_dcl_commands */
@@ -314,7 +316,7 @@ public class PublicTadpoleDefine {
 	/** query ddl type */
 	public static enum QUERY_DDL_STATUS {CREATE, ALTER, DROP, UNKNOWN};
 	public static enum QUERY_DDL_TYPE 	{TABLE, VIEW, SEQUENCE, INDEX, PROCEDURE, FUNCTION, TRIGGER, PACKAGE, SYNONYM, LINK, JOBS, JAVA, UNKNOWN};
-	
+	public static enum ACCEAS_CTL_DDL_TYPE {SCHEMA, TABLEoVIEW, FUNCTION, PROCEDURE};
 	public static String[] DB_PRIMARY_KEY = {
 											"PRI", 
 											"PK", 

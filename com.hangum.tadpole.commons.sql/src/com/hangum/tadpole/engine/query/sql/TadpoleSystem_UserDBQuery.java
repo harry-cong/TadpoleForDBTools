@@ -176,7 +176,8 @@ public class TadpoleSystem_UserDBQuery {
 		// tadpole_user_db_role
 		TadpoleUserDbRoleDAO roleDao = TadpoleSystem_UserRole.insertTadpoleUserDBRole(userSeq, 
 					insertedUserDB.getSeq(), 
-					PublicTadpoleDefine.DB_USER_ROLE_TYPE.ADMIN.toString()
+					PublicTadpoleDefine.DB_USER_ROLE_TYPE.ADMIN.toString(),
+					""
 				);
 		
 		// to save access control
@@ -267,21 +268,33 @@ public class TadpoleSystem_UserDBQuery {
 	 * group의 그룹명을 리턴합니다.
 	 * 
 	 * @param userSeq
+	 * @param isAdmin 어드민 검색 여부
 	 * @return
 	 * @throws TadpoleSQLManagerException, SQLException 
 	 */
-	public static List<String> getUserGroupName(int userSeq) throws TadpoleSQLManagerException, SQLException {
+	public static List<String> getUserGroupName(int userSeq, boolean isAdmin) throws TadpoleSQLManagerException, SQLException {
 		Map<String, Object> mapParam = new HashMap<String, Object>();
 		mapParam.put("user_seq", userSeq);//SessionManager.getUserSeq());
 		mapParam.put("thisTime", System.currentTimeMillis());
+		mapParam.put("isAdmin", isAdmin?"true":"false");
 		SqlMapClient sqlClient = TadpoleSQLManager.getInstance(TadpoleSystemInitializer.getUserDB());
 		List<UserDBDAO> listUserDB = sqlClient.queryForList("userDB", mapParam);
+		
+		// group name filters
+		final String []strGroupNameFilters = GetAdminPreference.getViewGroupNameFilter();
 		
 		// set db access control
 		List<String> listGroupName = new ArrayList<String>();
 		for (UserDBDAO userDB : listUserDB) {
 			if(!listGroupName.contains(userDB.getGroup_name())) {
-				listGroupName.add(userDB.getGroup_name());
+				boolean isAdd = true;
+				for (String strGroupName : strGroupNameFilters) {
+					if(userDB.getGroup_name().startsWith(strGroupName)) {
+						isAdd = false;
+					}
+				}
+				
+				if(isAdd) listGroupName.add(userDB.getGroup_name());
 			}
 		}
 		
@@ -293,10 +306,11 @@ public class TadpoleSystem_UserDBQuery {
 	 * 
 	 * @param strGoupName
 	 * @param intUserSeq
+	 * @param isAdmin
 	 * @return
 	 * @throws TadpoleSQLManagerException, SQLException 
 	 */
-	public static List<UserDBDAO> getUserGroupDB(String strGoupName, int intUserSeq) throws TadpoleSQLManagerException, SQLException {
+	public static List<UserDBDAO> getUserGroupDB(String strGoupName, int intUserSeq, boolean isAdmin) throws TadpoleSQLManagerException, SQLException {
 		
 		long longCurrentTime = System.currentTimeMillis();
 		
@@ -304,6 +318,7 @@ public class TadpoleSystem_UserDBQuery {
 		mapParam.put("group_name", strGoupName);
 		mapParam.put("user_seq", intUserSeq);
 		mapParam.put("thisTime", longCurrentTime);
+		mapParam.put("isAdmin", isAdmin?"true":"false");
 		
 		SqlMapClient sqlClient = TadpoleSQLManager.getInstance(TadpoleSystemInitializer.getUserDB());
 		List<UserDBDAO> listUserDB = sqlClient.queryForList("userGroupDB", mapParam);

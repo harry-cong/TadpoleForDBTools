@@ -416,11 +416,11 @@ public class TadpoleMongoDBCollectionComposite extends AbstractObjectComposite {
 			return;
 		}
 		
-		final String MSG_DataIsBeginAcquired = CommonMessages.get().DataIsBeginAcquired;
+		final String MSG_LoadingData = CommonMessages.get().LoadingData;;
 		Job job = new Job(Messages.get().MainEditor_45) {
 			@Override
 			public IStatus run(IProgressMonitor monitor) {
-				monitor.beginTask(MSG_DataIsBeginAcquired, IProgressMonitor.UNKNOWN);
+				monitor.beginTask(MSG_LoadingData, IProgressMonitor.UNKNOWN);
 				
 				try {
 					showTables= MongoDBQuery.listCollection(userDB);

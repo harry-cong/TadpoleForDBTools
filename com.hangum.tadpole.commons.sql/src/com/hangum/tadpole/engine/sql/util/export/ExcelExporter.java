@@ -13,27 +13,14 @@ package com.hangum.tadpole.engine.sql.util.export;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-import com.hangum.tadpole.commons.util.CSVFileUtils;
 import com.hangum.tadpole.engine.sql.util.RDBTypeToJavaTypeUtils;
 import com.hangum.tadpole.engine.sql.util.SQLUtil;
 import com.hangum.tadpole.engine.sql.util.resultset.QueryExecuteResultDTO;
@@ -45,6 +32,61 @@ import com.hangum.tadpole.engine.sql.util.resultset.QueryExecuteResultDTO;
  *
  */
 public class ExcelExporter extends AbstractTDBExporter {
+	
+	/**
+	 * 엑셀파일을 만든다.
+	 * 
+	 * @param strFullFileName
+	 * @param strSheetName
+	 * @param listData
+	 * @return
+	 * @throws Exception
+	 */
+	public static String makeFile(String strFullFileName, String strSheetName, List<String[]> listData) throws Exception {
+		XSSFWorkbook workbookExcel = null;
+		XSSFSheet sheetExcel = null;
+		int rowNum = 0;
+		
+		File fileXlsx = new File(strFullFileName);
+		if(fileXlsx.exists()) {
+			workbookExcel = new XSSFWorkbook(new FileInputStream(fileXlsx));
+			sheetExcel = workbookExcel.getSheet(strSheetName);
+			
+			rowNum = sheetExcel.getLastRowNum()+1;
+		} else {
+			workbookExcel = new XSSFWorkbook();
+			sheetExcel = workbookExcel.createSheet(strSheetName);
+		}
+		
+		for(int i=0; i<listData.size(); i++) {
+			Row row = sheetExcel.createRow(rowNum+i);
+			
+			String[] arryData = listData.get(i);
+			for(int j=0; j<arryData.length; j++) {
+				Cell cell = row.createCell(j);
+				cell.setCellValue(arryData[j]);
+			}
+		}
+		
+		workbookExcel.write(new FileOutputStream(new File(strFullFileName), true));
+		workbookExcel.close();
+		
+		return strFullFileName;
+	}
+	
+	/**
+	 * make content file
+	 * 
+	 * @param strTmpFile
+	 * @param strSheetName
+	 * @param listData
+	 * @return
+	 * @throws Exception
+	 */
+	public static String makeContentFile(String strTmpFile, String strSheetName, List<String[]> listData) throws Exception {
+		String strFullFileName = makeDirName(strTmpFile) + strTmpFile + "." + "xlsx";;
+		return makeFile(strFullFileName, strSheetName, listData);
+	}
 
 	/**
 	 * make content file
@@ -59,7 +101,6 @@ public class ExcelExporter extends AbstractTDBExporter {
 		XSSFSheet sheetExcel = null;
 		int rowNum = 0;
 		int colNum = 0;
-		
 		
 		File fileXlsx = new File(strFullPath);
 		if(fileXlsx.exists()) {
@@ -109,7 +150,6 @@ public class ExcelExporter extends AbstractTDBExporter {
 			}	// column size
 		}	// data size
 		
-
 		workbookExcel.write(new FileOutputStream(new File(strFullPath)));
 		workbookExcel.close();
 		

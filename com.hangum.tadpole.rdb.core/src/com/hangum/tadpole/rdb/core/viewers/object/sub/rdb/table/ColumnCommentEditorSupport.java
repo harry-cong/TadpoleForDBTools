@@ -16,6 +16,7 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 
+import com.hangum.tadpole.commons.libs.core.define.PublicTadpoleDefine;
 import com.hangum.tadpole.engine.define.DBGroupDefine;
 import com.hangum.tadpole.engine.query.dao.mysql.TableColumnDAO;
 import com.hangum.tadpole.engine.query.dao.mysql.TableDAO;
@@ -52,18 +53,22 @@ public class ColumnCommentEditorSupport extends EditingSupport {
 
 	@Override
 	protected CellEditor getCellEditor(Object element) {
-		if(column == 3) return new CommentCellEditor(column, viewer);
+		if(column == 6) return new CommentCellEditor(column, viewer);
 		else return null;
 	}
 
 	@Override
 	protected boolean canEdit(Object element) {
-		if(column == 3) {
-			if(DBGroupDefine.ORACLE_GROUP == userDB.getDBGroup() ||
-					DBGroupDefine.POSTGRE_GROUP == userDB.getDBGroup() ||
-					DBGroupDefine.MSSQL_GROUP == userDB.getDBGroup() ||
-					DBGroupDefine.MYSQL_GROUP == userDB.getDBGroup() ) {
-				return true;
+		if(column == 6) {
+			if(PublicTadpoleDefine.YES_NO.YES.name().equals(userDB.getIs_readOnlyConnect())) return false;
+			
+			if(PublicTadpoleDefine.YES_NO.NO.name().equals(userDB.getDbAccessCtl().getDdl_lock())) {
+				if(DBGroupDefine.ORACLE_GROUP == userDB.getDBGroup() ||
+						DBGroupDefine.POSTGRE_GROUP == userDB.getDBGroup() ||
+						DBGroupDefine.MSSQL_GROUP == userDB.getDBGroup() ||
+						DBGroupDefine.MYSQL_GROUP == userDB.getDBGroup() ) {
+					return true;
+				}
 			}
 		}
 		

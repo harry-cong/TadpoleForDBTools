@@ -37,13 +37,18 @@ public class LicenseValidator {
 		try {
 			LicenseDAO licenseDAO = getLicense();
 			if(!"".equals(licenseDAO.getCustomer())) {
-				return "Enterprise Ver. " + licenseDAO.getCustomer();
+				return "Tadpole Hub for " + licenseDAO.getCustomer();
 			}
 		} catch(Exception e) {
 			logger.error("get licenseinfo", e);
 		}
 		
 		return "License is GNU Lesser General Public License v.3";
+	}
+	
+	public static String getTerm() {
+		LicenseDAO licenseDAO = LicenseValidator.getLicense();
+		return licenseDAO.getTerm();
 	}
 	
 	/**
@@ -53,5 +58,20 @@ public class LicenseValidator {
 	public static boolean isEnterprise() {
 		LicenseDAO licenseDAO = LicenseValidator.getLicense();
 		return licenseDAO.isEnterprise();
+	}
+	
+	public static String getActivationDate() {
+		LicenseDAO licenseDAO = LicenseValidator.getLicense();
+		return licenseDAO.getActivationDate();
+	}
+	
+	public static String getExpirationDate() {
+		LicenseDAO licenseDAO = LicenseValidator.getLicense();
+		return licenseDAO.getExpirationDate();
+	}
+	
+	public static long getRemaining() {
+		LicenseDAO licenseDAO = LicenseValidator.getLicense();
+		return licenseDAO.getRemaining();
 	}
 }

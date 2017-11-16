@@ -159,6 +159,15 @@ public class ResultMainComposite extends Composite {
 	public void executeCommand(final RequestQuery reqQuery) {
 		this.reqQuery = reqQuery;
 		
+		// 
+//		if(DBGroupDefine.DYNAMODB_GROUP == getUserDB().getDBGroup()) {
+//			if((reqQuery.getSqlDMLType() != QUERY_DML_TYPE.SELECT) || (reqQuery.getMode() == EditorDefine.QUERY_MODE.EXPLAIN_PLAN)){
+//				MessageDialog.openInformation(getShell(), CommonMessages.get().Information,  Messages.get().DoNotSupportDynamoDB);
+//				setOrionTextFocus();
+//				return;
+//			}
+//		}
+		
 		boolean isExecuteQuery = compositeResultSet.executeCommand(reqQuery);
 		if(!isExecuteQuery) {
 			setOrionTextFocus();

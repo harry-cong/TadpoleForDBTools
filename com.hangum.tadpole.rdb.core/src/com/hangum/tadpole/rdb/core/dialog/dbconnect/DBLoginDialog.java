@@ -171,7 +171,7 @@ public class DBLoginDialog extends Dialog {
 		
 		// db groupData 
 		try {
-			listGroupName = TadpoleSystem_UserDBQuery.getUserGroupName(SessionManager.getUserSeq());
+			listGroupName = TadpoleSystem_UserDBQuery.getUserGroupName(SessionManager.getUserSeq(), false);
 			
 		} catch (Exception e1) {
 			logger.error("get group info", e1); //$NON-NLS-1$
@@ -198,7 +198,9 @@ public class DBLoginDialog extends Dialog {
 		
 		if(!ApplicationArgumentUtils.isOnlineServer()) {
 			DBDefine dbDefine = (DBDefine)comboDBList.getData(comboDBList.getText());
-			if(dbDefine == DBDefine.ALTIBASE_DEFAULT |
+			if(
+//					dbDefine == DBDefine.DYNAMODB_DEFAULT |
+					dbDefine == DBDefine.ALTIBASE_DEFAULT |
 					dbDefine == DBDefine.CUBRID_DEFAULT |
 					dbDefine == DBDefine.MYSQL_DEFAULT |
 					dbDefine == DBDefine.MARIADB_DEFAULT |
@@ -206,22 +208,20 @@ public class DBLoginDialog extends Dialog {
 					dbDefine == DBDefine.ORACLE_DEFAULT |
 					dbDefine == DBDefine.SQLite_DEFAULT |
 					dbDefine == DBDefine.TIBERO_DEFAULT |
-					dbDefine == DBDefine.POSTGRE_DEFAULT |
-					dbDefine == DBDefine.AGENSGRAPH_DEFAULT
+					dbDefine == DBDefine.POSTGRE_DEFAULT 
 			) {
 				try {
 					ClassUtils.getClass(dbDefine.getDriverClass());
 				} catch (ClassNotFoundException e) {
-		
+					logger.error(String.format("%s driver not found. %s", dbDefine.getDriverClass(), e.getMessage()));
+					
 					if(MessageDialog.openConfirm(null, Messages.get().DriverNotFound, Messages.get().DriverNotFoundMSG)) {
 						JDBCDriverManageDialog dialog = new JDBCDriverManageDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 						if(Dialog.OK ==  dialog.open()) {
-							if(dialog.isUploaded()) {
-								MessageDialog.openInformation(null, CommonMessages.get().Information, Messages.get().jdbcdriver);
-							}
-						}		
+							if(dialog.isUploaded()) MessageDialog.openInformation(null, CommonMessages.get().Information, Messages.get().jdbcdriver);
+						}
 					}
-				}
+				}	// try catch
 			}
 		}
 

@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.hangum.tadpole.application.initialize.wizard;
 
+import java.sql.Timestamp;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
@@ -18,6 +19,7 @@ import org.eclipse.jface.wizard.Wizard;
 import com.hangum.tadpole.application.initialize.Messages;
 import com.hangum.tadpole.application.initialize.wizard.dao.SystemAdminWizardUserDAO;
 import com.hangum.tadpole.commons.libs.core.define.PublicTadpoleDefine;
+import com.hangum.tadpole.commons.libs.core.message.CommonMessages;
 import com.hangum.tadpole.commons.util.Utils;
 import com.hangum.tadpole.engine.query.dao.system.UserDAO;
 import com.hangum.tadpole.engine.query.sql.TadpoleSystemQuery;
@@ -83,7 +85,7 @@ public class SystemInitializeWizard extends Wizard {
 						PublicTadpoleDefine.SYSTEM_DEFAULT_USER, 
 						Utils.getUniqueDigit(7), 
 						PublicTadpoleDefine.YES_NO.YES.name(),
-						"1005tadPole1206", 	
+						"", 	
 						PublicTadpoleDefine.USER_ROLE_TYPE.SYSTEM_ADMIN.toString(),
 						"Personal Admin", 
 						Locale.ENGLISH.getDisplayLanguage(Locale.ENGLISH), 
@@ -92,7 +94,8 @@ public class SystemInitializeWizard extends Wizard {
 						PublicTadpoleDefine.YES_NO.NO.name(), 
 						"",
 						"*",
-						PublicTadpoleDefine.SYSTEM_DEFAULT_USER); //$NON-NLS-1$ //$NON-NLS-2$
+						PublicTadpoleDefine.SYSTEM_DEFAULT_USER,
+						new Timestamp(System.currentTimeMillis())); //$NON-NLS-1$ //$NON-NLS-2$
 				
 			} catch(Exception e) {
 				logger.error("System initialize Exception", e);
@@ -110,14 +113,15 @@ public class SystemInitializeWizard extends Wizard {
 				adminDao.getEmail(), Utils.getUniqueDigit(7), PublicTadpoleDefine.YES_NO.YES.name(),
 				adminDao.getPasswd(), 	
 				PublicTadpoleDefine.USER_ROLE_TYPE.SYSTEM_ADMIN.toString(),
-				"System Default Admin", 
+				CommonMessages.get().TadpoleAdministrator,  
 				Locale.ENGLISH.getDisplayLanguage(Locale.ENGLISH), 
 				PublicTadpoleDefine.DEFAULT_TIME_ZONE,
 				PublicTadpoleDefine.YES_NO.YES.name(), 
 				PublicTadpoleDefine.YES_NO.NO.name(), 
 				"", 
 				"*",
-				adminDao.getEmail()); //$NON-NLS-1$ //$NON-NLS-2$
+				adminDao.getEmail(),
+				new Timestamp(System.currentTimeMillis())); //$NON-NLS-1$ //$NON-NLS-2$
 				
 			} catch(Exception e) {
 				logger.error("System initialize Exception", e);

@@ -233,7 +233,7 @@ public class TadpoleIndexesComposite extends AbstractObjectComposite {
 	 * index column list
 	 */
 	protected void createIndexColumne(final TableViewer tv) {
-		String[] name = {Messages.get().SEQ, Messages.get().Column, Messages.get().Order};
+		String[] name = {Messages.get().SEQ, Messages.get().Column, Messages.get().Comment};
 		int[] size = {60, 300, 50};
 
 		for (int i=0; i<name.length; i++) {
@@ -264,10 +264,10 @@ public class TadpoleIndexesComposite extends AbstractObjectComposite {
 				menuMgr.add(dropAction_Index);
 				menuMgr.add(new Separator());
 			}
-			menuMgr.add(refreshAction_Index);
-//			menuMgr.add(new Separator());
-//			menuMgr.add(viewDDLAction);
 		}
+		menuMgr.add(refreshAction_Index);
+//		menuMgr.add(new Separator());
+//		menuMgr.add(viewDDLAction);
 
 		indexTableViewer.getTable().setMenu(menuMgr.createContextMenu(indexTableViewer.getTable()));
 		getSite().registerContextMenu(menuMgr, indexTableViewer);
